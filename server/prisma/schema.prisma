@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// User model to store user information
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+  phone       String   @unique
+  role        Role     @default(STUDENT)
+  orders      Order[]
+  subscriptions Subscription[]
+  createdAt   DateTime @default(now())
+}
+
+// ROles for different types of users
+enum Role {
+  STUDENT
+  ADMIN
+  STAFF
+}
+
+// To store menu items
+model MenuItem {
+  id             Int      @id @default(autoincrement())
+  name           String
+  category       String
+  preparationTime String?
+  price          Float
+  isAvailable    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  orderItems     OrderItem[]
+}
+
+// orders placed by user 
+model Order {
+  id           Int         @id @default(autoincrement())
+  userId       Int
+  user         User        @relation(fields: [userId], references: [id])
+  totalAmount  Float
+  status       String      @default("Pending")
+  paymentStatus String     @default("Unpaid")
+  qrCode       String?
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+}
+
+// Items in each order
+model OrderItem {
+  id        Int       @id @default(autoincrement())
+  orderId   Int
+  menuItemId Int
+  quantity  Int
+  order     Order     @relation(fields: [orderId], references: [id])
+  menuItem  MenuItem  @relation(fields: [menuItemId], references: [id])
+}
+
+// Subscription model for meal plans
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  mealType  MealType
+  validFrom DateTime
+  validTo   DateTime
+  qrCode    String?
+}
+
+// Meal types for subscriptions
+enum MealType {
+  BREAKFAST
+  LUNCH
+  SNACKS
+  DINNER
+}
