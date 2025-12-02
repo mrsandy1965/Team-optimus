@@ -36,7 +36,6 @@ The **Mess Management System** is a unified mobile and web-based platform design
 | Role | Capabilities |
 |------|--------------|
 | **Student/User** | Browse menus, place orders, manage subscriptions, view QR codes, track expenses |
-| **Staff** | Scan QR codes, update order status, view assigned orders |
 | **Admin** | Full CRUD on menu items, order management, analytics, user management, feedback review |
 
 ## 🏗️ Architecture
@@ -100,6 +99,7 @@ Team-optimus/
    npm install
    npx prisma migrate dev
    npx prisma generate
+   npx prisma db seed #optional
    npm run start
    ```
 
@@ -128,7 +128,7 @@ node createAdmin.js
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/mess_db"
 JWT_SECRET="your-secret-key"
-PORT=8   000
+PORT=8000
 ```
 
 ## 📱 Application Features
