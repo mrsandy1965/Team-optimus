@@ -45,7 +45,6 @@ const getAdminAnalytics = async (req, res) => {
             })
         );
 
-        // Daily Orders (Last 7 Days)
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
         sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -87,9 +86,7 @@ const getAdminAnalytics = async (req, res) => {
     }
 };
 
-// @desc    Get Student Analytics
-// @route   GET /api/analytics/student
-// @access  Private
+
 const getStudentAnalytics = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -115,7 +112,7 @@ const getStudentAnalytics = async (req, res) => {
             }
         });
 
-        // 4. Weekly Attendance (Orders per day of current week)
+
         const startOfWeek = new Date();
         startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
         startOfWeek.setHours(0, 0, 0, 0);
@@ -138,7 +135,7 @@ const getStudentAnalytics = async (req, res) => {
             weeklyAttendance.push({ day: days[i], count });
         }
 
-        // 5. Monthly Expenses (Current Year)
+  
         const currentYear = new Date().getFullYear();
         const monthlyExpenses = [];
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
