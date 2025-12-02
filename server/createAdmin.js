@@ -8,7 +8,7 @@ async function main() {
     const hashedPassword = await bcrypt.hash(password, 10);
     const randomPhone = Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
-    // Check if user exists
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
