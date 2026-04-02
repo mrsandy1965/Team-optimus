@@ -275,7 +275,16 @@ export default function Navbar() {
                             <Link href="/login" className="btn btn-outline" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>
                                 Login
                             </Link>
-                            <Link href="/register" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>
+                            <Link href="/register" className="btn" style={{ 
+                                padding: '8px 22px', 
+                                fontSize: '0.9rem',
+                                background: 'var(--primary)',
+                                color: '#ffffff',
+                                border: '2px solid var(--primary)',
+                                fontWeight: '700',
+                                letterSpacing: '0.3px',
+                                boxShadow: '0 4px 14px rgba(108, 92, 231, 0.45)'
+                            }}>
                                 Sign Up
                             </Link>
                         </div>
