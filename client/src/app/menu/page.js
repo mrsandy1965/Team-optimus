@@ -4,6 +4,39 @@ import api from '../../utils/api';
 import { Search, Filter, ShoppingCart, Plus, Minus, Calendar, MapPin, Clock } from 'lucide-react';
 import Link from 'next/link';
 
+// Food image lookup: check item name first, then fall back to category
+const FOOD_IMAGES = {
+  // By exact name (lowercase)
+  'idli sambar': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=80',
+  'masala dosa': 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=400&q=80',
+  'veg thali': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80',
+  'chicken biryani': 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=80',
+  'paneer butter masala': 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400&q=80',
+  'cold coffee': 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80',
+  'veg burger': 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80',
+  'cheese sandwich': 'https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400&q=80',
+  'chocolate brownie': 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80',
+  'protein shake': 'https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=400&q=80',
+  'fruit salad': 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&q=80',
+  'oats bowl': 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&q=80',
+};
+
+// Fallback by category (lowercase)
+const CATEGORY_IMAGES = {
+  'breakfast': 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400&q=80',
+  'lunch': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80',
+  'dinner': 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&q=80',
+  'snacks': 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=400&q=80',
+  'beverages': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
+  'dessert': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&q=80',
+};
+
+function getFoodImage(name, category) {
+  const nameLower = (name || '').toLowerCase();
+  const catLower = (category || '').toLowerCase();
+  return FOOD_IMAGES[nameLower] || CATEGORY_IMAGES[catLower] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80';
+}
+
 export default function Menu() {
     const [menuItems, setMenuItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
@@ -283,94 +316,144 @@ export default function Menu() {
                     </div>
                 </div>
 
+
                 <div className="grid">
                     {filteredItems.map((item) => (
                         <div key={item.id} className="card" style={{
                             position: 'relative',
                             overflow: 'hidden',
                             display: 'flex',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            padding: 0
                         }}>
-                            {/* Category Badge */}
-                            <span className="badge badge-warning" style={{
-                                position: 'absolute',
-                                top: '15px',
-                                right: '15px',
-                                zIndex: 1
+                            {/* Food Image */}
+                            <div style={{
+                                position: 'relative',
+                                width: '100%',
+                                height: '200px',
+                                overflow: 'hidden',
+                                borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+                                flexShrink: 0
                             }}>
-                                {item.category}
-                            </span>
-
-                            <div style={{ marginBottom: '15px' }}>
-                                <h3 style={{
-                                    fontSize: '1.4rem',
-                                    marginBottom: '8px',
-                                    color: 'var(--dark)',
-                                    fontWeight: '700'
+                                <img
+                                    src={getFoodImage(item.name, item.category)}
+                                    alt={item.name}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        transition: 'transform 0.4s ease'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.07)'}
+                                    onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    onError={e => {
+                                        e.currentTarget.src = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80';
+                                    }}
+                                />
+                                {/* Category Badge on image */}
+                                <span className="badge badge-warning" style={{
+                                    position: 'absolute',
+                                    top: '12px',
+                                    right: '12px',
+                                    zIndex: 1,
+                                    backdropFilter: 'blur(8px)',
+                                    background: 'rgba(253, 203, 110, 0.9)'
                                 }}>
-                                    {item.name}
-                                </h3>
-
-                                {item.outlet && (
+                                    {item.category}
+                                </span>
+                                {/* Unavailable overlay */}
+                                {!item.isAvailable && (
                                     <div style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'rgba(0,0,0,0.5)',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '6px',
-                                        fontSize: '13px',
-                                        color: 'var(--gray-dark)',
-                                        marginBottom: '8px'
+                                        justifyContent: 'center',
+                                        color: 'white',
+                                        fontWeight: '700',
+                                        fontSize: '1.1rem',
+                                        letterSpacing: '1px'
                                     }}>
-                                        <MapPin size={14} />
-                                        {item.outlet.name}
+                                        UNAVAILABLE
                                     </div>
                                 )}
                             </div>
 
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                marginBottom: '20px',
-                                fontSize: '14px',
-                                color: 'var(--gray-dark)'
-                            }}>
-                                <Clock size={16} />
-                                {item.preparationTime || 'N/A'}
-                            </div>
+                            {/* Card Body */}
+                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <div style={{ marginBottom: '10px' }}>
+                                    <h3 style={{
+                                        fontSize: '1.25rem',
+                                        marginBottom: '6px',
+                                        color: 'var(--dark)',
+                                        fontWeight: '700'
+                                    }}>
+                                        {item.name}
+                                    </h3>
 
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginTop: 'auto'
-                            }}>
-                                <span style={{
-                                    fontWeight: '800',
-                                    fontSize: '1.8rem',
-                                    color: 'var(--primary)'
+                                    {item.outlet && (
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            fontSize: '13px',
+                                            color: 'var(--gray-dark)',
+                                            marginBottom: '6px'
+                                        }}>
+                                            <MapPin size={14} />
+                                            {item.outlet.name}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    marginBottom: '16px',
+                                    fontSize: '14px',
+                                    color: 'var(--gray-dark)'
                                 }}>
-                                    ₹{item.price}
-                                </span>
+                                    <Clock size={16} />
+                                    {item.preparationTime || 'N/A'}
+                                </div>
 
-                                <button
-                                    onClick={() => addToCart(item)}
-                                    className="btn btn-secondary"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '10px 20px',
-                                        borderRadius: '50px'
-                                    }}
-                                    disabled={!item.isAvailable}
-                                >
-                                    <ShoppingCart size={18} />
-                                    {item.isAvailable ? 'Add' : 'Unavailable'}
-                                </button>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginTop: 'auto'
+                                }}>
+                                    <span style={{
+                                        fontWeight: '800',
+                                        fontSize: '1.6rem',
+                                        color: 'var(--primary)'
+                                    }}>
+                                        ₹{item.price}
+                                    </span>
+
+                                    <button
+                                        onClick={() => addToCart(item)}
+                                        className="btn btn-secondary"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '10px 20px',
+                                            borderRadius: '50px'
+                                        }}
+                                        disabled={!item.isAvailable}
+                                    >
+                                        <ShoppingCart size={18} />
+                                        {item.isAvailable ? 'Add' : 'Unavailable'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
+
 
                 {filteredItems.length === 0 && (
                     <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--gray-dark)' }}>

@@ -88,13 +88,13 @@ export default function Home() {
               style={{
                 fontSize: '1.1rem',
                 padding: '16px 36px',
-                background: 'rgba(255,255,255,0.1)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.3)',
-                backdropFilter: 'blur(10px)'
+                background: 'white',
+                color: 'var(--primary)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                fontWeight: '700'
               }}
             >
-              Get Started
+              Sign Up Free
             </Link>
           </div>
         </div>

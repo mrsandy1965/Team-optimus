@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ShoppingCart, User, LogOut, Menu as MenuIcon, X, Bell, Award, MessageSquare, Utensils, TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import api from '../utils/api';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -19,10 +20,16 @@ export default function Navbar() {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
-                // Mock unread notifications count - in real app, fetch from API
-                setUnreadCount(2); 
+                // Fetch actual unread notifications count from API
+                api.get('/notifications')
+                    .then(res => {
+                        const unread = res.data.filter(n => !n.isRead).length;
+                        setUnreadCount(unread);
+                    })
+                    .catch(() => setUnreadCount(0));
             } else {
                 setUser(null);
+                setUnreadCount(0);
             }
         };
 
