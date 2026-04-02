@@ -212,14 +212,14 @@ ul {
   align-items: center;
 }
 
-.nav-links a {
+.nav-links a:not(.btn) {
   font-weight: 500;
   color: var(--gray-dark);
   position: relative;
   font-size: 0.95rem;
 }
 
-.nav-links a:hover {
+.nav-links a:not(.btn):hover {
   color: var(--primary);
 }
 
